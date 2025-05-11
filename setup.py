@@ -41,7 +41,7 @@ def update_repo():
         print("Checking for updates from GitHub...")
         origin.fetch()
         current_commit = repo.head.commit
-        remote_commit = repo.commit('origin/master')
+        remote_commit = repo.commit('origin/main')
 
         if current_commit != remote_commit:
             print("Updates available. Pulling latest changes...")
