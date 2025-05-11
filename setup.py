@@ -1,71 +1,25 @@
-import os
-import sys
 import subprocess
-import pkg_resources
-import platform
+import sys
+import os
 
-# Function to install packages using pip
-def install_package(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+# Get the directory where this script is located
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Function to check if Python is installed
-def check_python_installation():
+# Function to install dependencies locally in the current directory
+def install_dependencies():
     try:
-        subprocess.check_call([sys.executable, "--version"])
-        print(f"Python is installed: {sys.version}")
-    except subprocess.CalledProcessError:
-        print("Python is not installed. Please install Python first.")
+        print("Installing dependencies in the current directory...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--target", current_dir, "GitPython", "tkinterdnd2"])
+        print("Dependencies installed successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error installing dependencies: {e}")
         sys.exit(1)
 
-# Function to install dependencies from requirements.txt
-def install_requirements():
-    print("Installing required packages from requirements.txt...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+# Install dependencies
+install_dependencies()
 
-# Function to check if the required Python packages are installed
-def check_requirements():
-    try:
-        pkg_resources.require(["tkinterdnd2", "GitPython"])
-        print("Required Python libraries are installed.")
-    except pkg_resources.DistributionNotFound:
-        print("Required libraries not found. Installing...")
-        install_requirements()
+# Add the current directory to sys.path so Python can find the installed libraries
+sys.path.append(current_dir)
 
-# Function to update the repository from GitHub
-def update_repo():
-    try:
-        import git
-        repo_path = os.path.dirname(os.path.realpath(__file__))
-        repo = git.Repo(repo_path)
-        origin = repo.remotes.origin
-        print("Checking for updates from GitHub...")
-        origin.fetch()
-        current_commit = repo.head.commit
-        remote_commit = repo.commit('origin/main')
-
-        if current_commit != remote_commit:
-            print("Updates available. Pulling latest changes...")
-            origin.pull()
-        else:
-            print("No updates available.")
-    except ImportError:
-        print("GitPython is not installed. Installing GitPython...")
-        install_package("GitPython")
-
-# Main setup function
-def main():
-    print("Setting up Music Video Software...")
-
-    # Check for Python installation
-    check_python_installation()
-
-    # Check if required libraries are installed
-    check_requirements()
-
-    # Update the repository
-    update_repo()
-
-    print("Setup complete! You can now run the application.")
-
-if __name__ == "__main__":
-    main()
+# Confirm that everything is ready for setup
+print("Setup complete! Dependencies have been installed in:", current_dir)
